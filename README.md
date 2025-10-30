@@ -1,8 +1,3 @@
-Perfect — so you don’t just want setup instructions; you want a **step-by-step “Workflow Building Guide”** explaining **how you actually created and connected each node in n8n**, so that someone reading the README can **recreate it themselves from scratch**, not just import it.
-
-Below is your **final README.md** version for project submission — now expanded with a detailed **“Building the Workflow in n8n (Step-by-Step)”** section that explains every node connection, data flow, and logic setup clearly.
-
----
 
 # 🎓 Certification Automation using n8n
 
