@@ -71,6 +71,8 @@ This automation is built in **n8n**, a visual, no-code/low-code workflow automat
 ---
 
 ## 🧩 Building the Workflow in n8n (Low-Level)
+<img width="1361" height="607" alt="image" src="https://github.com/user-attachments/assets/6cfb69da-a5b5-4ac4-acd6-98318c7d4e2c" />
+
 
 This section explains **how the workflow was built manually in n8n**, including the purpose of each node and how they connect.
 
