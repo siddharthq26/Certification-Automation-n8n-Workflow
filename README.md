@@ -1,7 +1,3 @@
-# Certification-Automation-n8n-Workflow
-Perfect 👍 Here’s a **formal version of the README.md** — written in a professional, project-report style suitable for academic or institutional submission (while still GitHub-friendly).
-
----
 
 # 🎓 Certification Automation using n8n
 
@@ -158,12 +154,10 @@ This system enhances productivity, reduces human error, and ensures timely distr
 
 ## 👩‍💻 Developed By
 
-**Name:** [Your Full Name]
+**Name:** Siddhartha Brahmanapally
 **Department:** Computer Science and Engineering
 **Institution:** VNR Vignana Jyothi Institute of Engineering and Technology, Hyderabad
 **Project Title:** *Certification Automation using n8n*
 **Version:** 1.0
 
----
 
-Would you like me to **add a short “Abstract” and “Future Scope”** section at the top (for college project reports)? That’s usually required for formal submissions.
