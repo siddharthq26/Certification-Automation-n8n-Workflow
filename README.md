@@ -32,8 +32,45 @@ This automation is built in **n8n**, a visual, no-code/low-code workflow automat
 **Output:** PDF certificate stored in Google Drive and sent via Gmail
 
 ---
+## High-Level Architecture
 
-## 🧩 Building the Workflow in n8n (Step-by-Step)
+1. **Trigger**
+    - The workflow is initiated either:
+        - Manually (via a manual trigger)
+        - Automatically, by detecting a change or schedule in a Google Sheets document
+
+2. **Data Extraction**
+    - Reads participant data from a specified Google Sheet.
+    - Captures fields such as Name, Email, Position, Event Name, Date, Certificate Type, and Certificate URL.
+
+3. **Field Preparation**
+    - Sets and formats the fields needed for the certificate.
+
+4. **Decision: Certificate Type**
+    - Utilizes a Switch node to determine the participant’s Position (e.g., 1st, 2nd, 3rd, or Participation).
+    - Routes to the correct certificate template accordingly.
+
+5. **Certificate Generation**
+    - Populates the selected HTML certificate template with participant details.
+    - Converts the filled HTML into a PDF certificate.
+
+6. **Google Drive Upload**
+    - Uploads the generated PDF certificate to a designated Google Drive folder for storage and access.
+
+7. **Email Distribution Loop**
+    - Iterates over all participants.
+    - Sends the respective PDF certificate to each participant via Gmail.
+
+---
+
+## Architecture Diagram
+
+
+<img width="1803" height="2190" alt="image" src="https://github.com/user-attachments/assets/66491527-0387-4e6a-9cb2-07f0f36279df" />
+
+---
+
+## 🧩 Building the Workflow in n8n (Low-Level)
 
 This section explains **how the workflow was built manually in n8n**, including the purpose of each node and how they connect.
 
@@ -61,6 +98,9 @@ This section explains **how the workflow was built manually in n8n**, including 
     ```
 * **Output:** Participant details are passed to the next node.
 
+<img width="485" height="557" alt="image" src="https://github.com/user-attachments/assets/988242be-1f32-4de2-a799-eac7cd347bb7" />
+
+
 ---
 
 ### 🧩 Step 3: Set the Extracted Data
@@ -81,6 +121,10 @@ This section explains **how the workflow was built manually in n8n**, including 
 **Connection:**
 Connect `Google Sheets Trigger → Edit Fields`.
 
+(just drag the fields that you want to extract)
+
+<img width="491" height="557" alt="image" src="https://github.com/user-attachments/assets/5995d506-8cbe-4701-b031-7c0d6bf0d0d6" />
+
 ---
 
 ### 🧩 Step 4: Add a Switch Node
@@ -96,6 +140,10 @@ Connect `Google Sheets Trigger → Edit Fields`.
 
 **Connection:**
 Connect `Edit Fields → Switch`.
+
+(just like this add 4 routing rules)
+
+<img width="473" height="537" alt="image" src="https://github.com/user-attachments/assets/abb483a1-57e0-4f43-80a2-e3156ab6d5c2" />
 
 ---
 
@@ -121,6 +169,10 @@ Each node contains custom HTML and CSS with placeholders such as:
 **Connection:**
 Connect each output of the `Switch` node to its corresponding HTML node.
 
+(Here we are giveing the template of the certificate in html)
+
+<img width="613" height="535" alt="image" src="https://github.com/user-attachments/assets/ce52de13-36a1-4791-8087-66261e20294d" />
+
 ---
 
 ### 🧩 Step 6: Merge All HTML Outputs
@@ -135,12 +187,17 @@ Connect each output of the `Switch` node to its corresponding HTML node.
   HTML2 → Merge
   HTML3 → Merge
   ```
+<img width="202" height="407" alt="image" src="https://github.com/user-attachments/assets/6ef14b07-052f-41bf-9a90-31b67408c38b" />
 
 ---
 
 ### 🧩 Step 7: Convert HTML to PDF
 
 * **Node Type:** `HTML to PDF`
+(you need to download this node from community node )
+
+<img width="1086" height="146" alt="image" src="https://github.com/user-attachments/assets/70ac2295-6790-49ab-8184-842e4a458362" />
+
 * **Purpose:** Convert the generated HTML into a downloadable PDF certificate.
 * **Credentials:** Connect your **CustomJS API** (used for PDF generation).
 * **Input Field:**
@@ -149,10 +206,12 @@ Connect each output of the `Switch` node to its corresponding HTML node.
 
 **Connection:**
 `Merge → HTML to PDF`
+<img width="1304" height="527" alt="image" src="https://github.com/user-attachments/assets/bb41f094-7ba7-4b70-b02a-3b921585eb95" />
+
 
 ---
 
-### 🧩 Step 8: Loop Over Each Certificate
+### 🧩 Step 8: Loop Over Each Certificate(Optional)
 
 * **Node Type:** `Split In Batches`
 * **Purpose:** Process each participant’s certificate individually.
@@ -178,6 +237,9 @@ Connect each output of the `Switch` node to its corresponding HTML node.
 
 **Connection:**
 `Split In Batches → Google Drive`
+(in the file name box drag the name from the edit fields which you can see in the left side, by this while saving in the drive it will we saved with the correct name)
+<img width="1307" height="549" alt="image" src="https://github.com/user-attachments/assets/3d9987a4-750f-4c9e-bc52-7b1e7e75a303" />
+
 
 ---
 
@@ -201,38 +263,13 @@ Connect each output of the `Switch` node to its corresponding HTML node.
 **Connection:**
 `Split In Batches → Gmail`
 
----
+(in the 'to' box drag the email you are seeing on the left side in the edit fields and place it in th box and in option -> add option-> attachment -> add attachment)
+<img width="910" height="565" alt="image" src="https://github.com/user-attachments/assets/7f06f76e-0860-4dcb-9c45-10c3dc9a2092" />
 
-### 🧩 Step 11: Optional - Add “NoOp” Node (Loop)
-
-* **Node Type:** `NoOp`
-* **Purpose:** Completes the loop iteration by reconnecting to “Split In Batches”.
-* **Connection:**
-  `Gmail → NoOp → Split In Batches`
 
 ---
 
-### ✅ Final Flow Summary
 
-```
-Google Sheets Trigger
-   ↓
-Edit Fields (Set)
-   ↓
-Switch (Condition based on Position)
-   ↓
-HTML Templates (1–4)
-   ↓
-Merge
-   ↓
-HTML to PDF
-   ↓
-Split In Batches
-   ↓ ↓
- Gmail Node    Google Drive Upload
-```
-
----
 
 ## 🧰 Required Integrations
 
@@ -279,7 +316,6 @@ By automating certificate generation, institutions can save time, minimize error
 
 ## 🔮 Future Scope
 
-* Integration with event registration forms (Google Forms / Typeform).
 * Adding QR code-based certificate verification.
 * Auto-generating event-specific reports.
 * Providing an admin dashboard for tracking sent certificates.
@@ -295,5 +331,3 @@ By automating certificate generation, institutions can save time, minimize error
 **Version:** 1.0
 
 ---
-
-Would you like me to include **workflow diagram illustrations (like flowchart images or Mermaid diagrams)** to visually represent node connections? That would make your README even more professional for submission and GitHub.
